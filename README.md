@@ -23,7 +23,7 @@
   git clone https://github.com/golang/text
   ``````
   - 然后使用 go install github.com/spf13/cobra/cobra, 安装后在 $GOBIN 下出现了 cobra 可执行程序。  
-  [虚拟机安装成功](/img/虚拟机安装cobra.png)
+  ![虚拟机安装成功](/img/虚拟机安装cobra.png)
   - go-online上可以直接使用该命令完成安装
   
 参考文档：
