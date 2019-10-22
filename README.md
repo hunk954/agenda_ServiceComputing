@@ -12,11 +12,17 @@
 ## 三、实验步骤
 ### 1. 安装cobra
 - 使用命令`go get -v github.com/spf13/cobra/cobra`
-  - 虚拟机上使用出现报错
+  - 虚拟机上使用出现报错。
   ```
   Fetching https://golang.org/x/sys/unix?go-get=1
   https fetch failed: Get https://golang.org/x/sys/unix?go-get=1: dial tcp 216.239.37.1:443: i/o timeout
   ``````
+  - 根据课程指引，在 $GOPATH/src/golang.org/x 目录下用git clone下载sys和text项目。即
+  ```
+  git clone https://github.com/golang/sys
+  git clone https://github.com/golang/text
+  ``````
+  - 然后使用 go install github.com/spf13/cobra/cobra, 安装后在 $GOBIN 下出现了 cobra 可执行程序。
   - go-online上可以直接使用该命令完成安装
   
 参考文档：
