@@ -6,7 +6,21 @@
 3. 使用面向对象的思想设计程序，使得程序具有良好的结构命令，并能方便修改、扩展新的命令,不会影响其他命令的代码
 
 ## 二、实验环境
-1. CentOS-7: go version go1.11.5 linux/amd64
+1. 虚拟机CentOS-7: go version go1.11.5 linux/amd64
 2. [go-online](http://www.go-online.org.cn:8080): go version go1.12.7 linux/amd64
 
-## 三、
+## 三、实验步骤
+### 1. 安装cobra
+- 使用命令`go get -v github.com/spf13/cobra/cobra`
+  - 虚拟机上使用出现报错
+  ```
+  Fetching https://golang.org/x/sys/unix?go-get=1
+  https fetch failed: Get https://golang.org/x/sys/unix?go-get=1: dial tcp 216.239.37.1:443: i/o timeout
+  ``````
+  - go-online上可以直接使用该命令完成安装
+  
+参考文档：
+- [官方文档] 
+- [【中文】golang命令行库cobra的使用]
+
+
