@@ -41,8 +41,8 @@
 ![register1](/img/register1.png)
 5. 使用`go run main.go [func] [temp]`即可实现对应的功能(当然也可以先go install，之后`agenda [func] [temp]`调用)  
 ![register2](/img/register2.png)
-## 3. 逐步完成需求
-### 1. 用户注册`/cmd/register.go`
+### 3. 逐步完成需求
+#### 1. 用户注册`/cmd/register.go`
 - 参数：用户名、密码、邮箱、电话信息
 - 用户名具有唯一性，而且用户名对应唯一的密码
 - 注册成功和失败均有反馈的消息
