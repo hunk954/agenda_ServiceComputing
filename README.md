@@ -37,20 +37,125 @@
 ![cobra2](/img/online-cobra2.png)
 
 3. 创建子命令`cobra add [func]`，之后就会在/cmd下自动生成对应的[func].go  
-4. 之后在/cmd/[func].go中的init()设置参数flag，在[func]Cmd()的Run属性中的匿名函数中加入对应实现即可  
+4. 之后在/cmd/[func].go中的init()设置参数flag，在var [func]Cmd的Run属性中的匿名函数中加入对应实现即可  
 ![register1](/img/register1.png)
 5. 使用`go run main.go [func] [temp]`即可实现对应的功能(当然也可以先go install，之后`agenda [func] [temp]`调用)  
 ![register2](/img/register2.png)  
+
 参考文档：
 - [官方文档](https://github.com/spf13/cobra#overview)
 - [【中文】golang命令行库cobra的使用](https://www.cnblogs.com/borey/p/5715641.html)
 
 ### 3. 逐步完成需求
 #### 1. 用户注册`/cmd/register.go`
-- 参数：用户名、密码、邮箱、电话信息
-- 用户名具有唯一性，而且用户名对应唯一的密码
-- 注册成功和失败均有反馈的消息
+- 参数（必填）：用户名、密码、邮箱、电话信息
+- 需求：
+    - 用户名具有唯一性，而且用户名对应唯一的密码
+    - 注册成功和失败均有反馈的消息
+- 存储用户信息使用User信息结构体，为了在json中得到保存，将用户信息存储在UserList结构体中
+```go
+    type User struct{
+        Name string
+        Password string
+        Email string
+        Phone string
+    }
+    type UserList struct{
+        Users []User
+    }
+``````
+- 设置参数：init()中使用`registerCmd.Flags().StringP([temp]...)`,其中StringP表示的是读取的参数类型是string，其中参数分别表示参数名字、参数缩写、缺省值、提示信息。
+```go
+	registerCmd.FLags().StringP("user","u","Anoymous","username of a user(required)")
+	//...
+``````
+- 设置参数为必须填的属性：init()中使用`registerCmd.MarkFlagRequired([temp]...)`，其中参数填入参数名字
+```go
+	registerCmd.MarkFlagRequired("user")
+	//...
+``````
+- 参数读取：在`var registerCmd = $cobra.Command{}`的Run属性中的匿名函数中使用`[name],err := cmd.Flags().GetString([temp]...)`。name为变量名称， 方便之后调用。参数中则填入需要读取的参数名称。
+```go
+    username,_ := cmd.Flags().GetString("user")
+    //...
+``````
+- 代码逻辑：
+	- 打开user.json，将json转化为所需结构体
+    ```go
+    	f,err := os.OpenFile("./entity/user.json",os.O_RDONLY,0060)
+    	//...对err进行nil判断（略）
+    	var u UserList
+        buf := make([]byte,2048)
+        n,_ := f.Read(buf)
+        if n == 0{
+            //json为空，不需要进行检测
+        }else{
+            jsonReadErr := json.Unmarshal(buf[:n], &u)
+            //开始处理
+        }
+    ```
+	- 用户名合法性检测：判断所输入的用户名与json文件中用户名是否重复
+	```go
+		 for i := 0; i < len(u.Users); i++{
+        	 if username == u.Users[i].Name{
+         		fmt.Println("用户名已被注册")
+         		os.Exit(3)
+         	}
+		}
+	```
+	- 用户名合法，更新json：此处实现是重新打开user.json，此时读写属性是os.O_TRUNC(表示覆盖写入)。将新用户加入到维护的UserList中，之后转化为json序列，写入json文件中
+	```go
+        f,err = os.OpenFile("./entity/user.json",os.O_WRONLY|os.O_TRUNC,0060)
+        //...err是否nil的检测（略）
+        u.Users = append(u.Users,User{Name:username,Password:password,Email:email,Phone:phone})
+        buffer, jsonWriteErr := json.Marshal(u)
+        //...jsonWriteErr是否nil的检测（略）
+        _, writingErr := f.Write(buffer)
+        //...writingErr是否nil的检测（略）
+	```
+#### 2. 用户登录 `/cmd/login.go`
+- 参数（必填）：用户名、密码
+- 需求：
+    - 用户名和登录需要匹配才可以登录
+    - 如果已有用户登录，则无法登陆
+    - 无论登录是否成功均反馈信息
+- 代码逻辑：
+	- 通过curUser.txt是否为空，判断是否已有用户登录：
+	- 用户与密码是否匹配检测：
+	- 写入curUser.txt表示登录
+#### 3. 用户登出 `/cmd/logout.go`
+- 参数：无
+- 需求：
+	- 若没有用户登录则无法进行登出
+	- 必要的反馈信息
+- 代码逻辑：
+	- 通过curUser.txt是否为空，判断是否有用户在登录
+	- 登出：清空curUser.txt
+#### 4. 用户查询 `listUser.go`
+- 参数：无
+- 需求：
+	- 只有用户登录了才可以进行查询
+	- 打印所有用户的用户名、邮箱、电话
+- 代码逻辑：
+	- 通过curUser.txt是否为空，判断是否用户在登录
+	- 打印信息：user.json中除了password的信息打印
+#### 5. 用户注销 `/cmd/logoff.go'
+- 参数：无
+- 需求：
+	- 只有登录的用户才可以删除
+	- 删除后同时登出
+	- 必要的反馈信息
+- 代码逻辑：
+	- 判断是否用户在登陆
+	- 在user.json中删除该用户
+	- 清空curUser.txt，登出
 
-2. 用户登录
+## 四、实验结果
+### 1. 用户注册
+### 2. 用户登录
+### 3. 用户登出
+### 4. 用户查询
+### 5. 用户注销
 
-
+## 五、实验感想与思考
+这个实验建立在cobra库下，使命令行应用程序的实现变得更加简单，让我们可以把重心放在用户需求的代码实现上。除此之外，还让我对golang的文件读写更加娴熟，并初步了解了json序列化和反序列化的方法，让我能够简单的实现用户数据的存储。当然，我也能感受到我现在所实现的程序的局限性，比如输入密码时明文回显，数据存储中密码也是明文存储。现实生活中，我们肯定不会遇到这样做的系统应用。还有就是，这次所做的应用有许多冗余的代码（比如检验用户是否已经登录的检测上反复调用相同的代码，其实应该可以考虑直接设置一个BOOL变量进行多个go文件之间的信息传输，不知道可不可行），以及许多err的变量命名不规范等。对于会议方面的命令，因为时间不够充分就没有进行实现。其实在软件工程初级实训中就实现了类似的功能，不过相比起c++实现，golang中应该有许多方便的库对时间进行判断，减少代码书写的时间。
