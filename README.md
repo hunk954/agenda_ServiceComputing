@@ -26,7 +26,7 @@
   ![虚拟机安装成功](/img/虚拟机安装cobra.png)
   - **go-online**上可以直接使用该命令完成安装
   
-## 2. 简单使用cobra
+### 2. 简单使用cobra
 1. 使用命令`cobra -help`可以打印使用指南
 2. 进入到工作目录，创建我们的应用程序`cobra init --pkg-name=agenda`  
 - 新版本的cobra中，--pkg-name已经不再是可缺省的参数，需要我们手动加入。使用该命令后，我们就会看到目录下多了LICENSE、cmd文件夹以及main.go。 
@@ -42,7 +42,12 @@
 5. 使用`go run main.go [func] [temp]`即可实现对应的功能(当然也可以先go install，之后`agenda [func] [temp]`调用)  
 ![register2](/img/register2.png)
 ## 3. 逐步完成需求
-1. 
+### 1. 用户注册`/cmd/register.go`
+- 参数：用户名、密码、邮箱、电话信息
+- 用户名具有唯一性，而且用户名对应唯一的密码
+- 注册成功和失败均有反馈的消息
+
+2. 用户登录
 参考文档：
 - [官方文档](https://github.com/spf13/cobra#overview)
 - [【中文】golang命令行库cobra的使用](https://www.cnblogs.com/borey/p/5715641.html)
