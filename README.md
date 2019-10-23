@@ -120,8 +120,41 @@
     - 如果已有用户登录，则无法登陆
     - 无论登录是否成功均反馈信息
 - 代码逻辑：
-	- 通过curUser.txt是否为空，判断是否已有用户登录：
+	- 通过curUser.txt是否为空，判断是否已有用户登录
+	```go
+    	f,err := os.OpenFile("./entity/curUser.txt",os.O_RDONLY,0060)
+    	//err错误检测（略）
+    	buf := make([]byte,2048)
+    	n,_ := f.Read(buf)
+    	if n != 0{
+    		fmt.Println("已有用户登录！")
+    		os.Exit(1)
+    	}
+    	f.Close()
+	```
 	- 用户与密码是否匹配检测：
+	```go
+   jsonReadErr := json.Unmarshal(buf[:n], &u)
+     //jsonReadErr错误判断（略）
+     for i := 0; i < len(u.Users); i++{
+     	if username == u.Users[i].Name{
+     		if password == u.Users[i].Password{
+     			fmt.Println("登陆成功！")
+     			loginUser := u.Users[i]
+     			writingBuffer, _ := json.Marshal(loginUser)
+                fCurUser, _ := os.OpenFile("./entity/curUser.txt",os.O_WRONLY|os.O_TRUNC,0060)
+                defer fCurUser.Close()
+                _, writingErr := fCurUser.Write(writingBuffer)
+                //writingErr判断（略）
+     		}
+     		flag = true //表示有对应的用户
+     		}else{
+     			fmt.Println("用户名不存在或密码错误！")
+     			os.Exit(2)
+     		}
+     	}
+	   }
+	```
 	- 写入curUser.txt表示登录
 #### 3. 用户登出 `/cmd/logout.go`
 - 参数：无
@@ -131,6 +164,13 @@
 - 代码逻辑：
 	- 通过curUser.txt是否为空，判断是否有用户在登录
 	- 登出：清空curUser.txt
+	```go
+		f,err = os.OpenFile("./entity/curUser.txt", os.O_TRUNC, 0060)
+        emptyStr := ""
+        emptyStrBuffer := []byte(emptyStr)
+        _,_ = f.Write(emptyStrBuffer)
+        f.Close()
+	```
 #### 4. 用户查询 `listUser.go`
 - 参数：无
 - 需求：
