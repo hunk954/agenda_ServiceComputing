@@ -32,11 +32,17 @@
 - 新版本的cobra中，--pkg-name已经不再是可缺省的参数，需要我们手动加入。使用该命令后，我们就会看到目录下多了LICENSE、cmd文件夹以及main.go。 
 
   ![init](/img/init.png)
-- **在go-online中**由于存在多个GOPATH的问题，安装完之后我们输入cobra会显示没有该命令，这是因为我们此处调用cobra命令时，系统去寻找的程序bin目录不是cobra安装的目录。由于许多限制，所以此处我的方法是首先进入工作目录，然后使用相对路径到cobra所在的bin目录进行使用（或者我们可以定义环境变量$BIN，指向我们需要的bin目录，以使之后更加顺畅的调用cobra）**需要先进入工作目录，因为cobra是自动将文件生成在当前所在目录**  
+- **在go-online中**由于存在多个GOPATH的问题，安装完之后我们输入cobra会显示没有该命令，这是因为我们此处调用cobra命令时，系统去寻找的程序bin目录不是cobra安装的目录。为了减少不必要的麻烦，所以此处我的方法是首先进入工作目录，然后使用相对路径到cobra所在的bin目录进行使用（或者我们可以定义环境变量$BIN，指向我们需要的bin目录，以使之后更加顺畅的调用cobra）**需要先进入工作目录，因为cobra是自动将文件生成在当前所在目录**  
 ![cobra1](/img/online-cobra1.png)  
 ![cobra2](/img/online-cobra2.png)
 
-3. 创建子命令`cobra add [func]`命令
+3. 创建子命令`cobra add [func]`，之后就会在/cmd下自动生成对应的[func].go  
+4. 之后在/cmd/[func].go中的init()设置参数flag，在[func]Cmd()的Run属性中的匿名函数中加入对应实现即可  
+![register1](/img/register1.png)
+5. 使用`go run main.go [func] [temp]`即可实现对应的功能(当然也可以先go install，之后`agenda [func] [temp]`调用)  
+![register2](/img/register2.png)
+## 3. 逐步完成需求
+1. 
 参考文档：
 - [官方文档](https://github.com/spf13/cobra#overview)
 - [【中文】golang命令行库cobra的使用](https://www.cnblogs.com/borey/p/5715641.html)
