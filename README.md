@@ -40,7 +40,11 @@
 4. 之后在/cmd/[func].go中的init()设置参数flag，在[func]Cmd()的Run属性中的匿名函数中加入对应实现即可  
 ![register1](/img/register1.png)
 5. 使用`go run main.go [func] [temp]`即可实现对应的功能(当然也可以先go install，之后`agenda [func] [temp]`调用)  
-![register2](/img/register2.png)
+![register2](/img/register2.png)  
+参考文档：
+- [官方文档](https://github.com/spf13/cobra#overview)
+- [【中文】golang命令行库cobra的使用](https://www.cnblogs.com/borey/p/5715641.html)
+
 ### 3. 逐步完成需求
 #### 1. 用户注册`/cmd/register.go`
 - 参数：用户名、密码、邮箱、电话信息
@@ -48,8 +52,5 @@
 - 注册成功和失败均有反馈的消息
 
 2. 用户登录
-参考文档：
-- [官方文档](https://github.com/spf13/cobra#overview)
-- [【中文】golang命令行库cobra的使用](https://www.cnblogs.com/borey/p/5715641.html)
 
 
